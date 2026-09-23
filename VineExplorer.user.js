@@ -239,7 +239,7 @@ ave_eventhandler.on('ave-database-changed', () => {
     }, 5000);
 })
 
-window.onscroll = () => { // ONSCROLL Event handler
+window.addEventListener('scroll', () => { 
     var _top = 5;
     stickElementToTopScrollEVhandler('ave-btn-allseen', `${_top}px`);
     _top = _top + 35;
@@ -250,15 +250,7 @@ window.onscroll = () => { // ONSCROLL Event handler
     }
 
     stickElementToTopScrollEVhandler('ave-btn-backtotop', `${_top}px`);
-
-    if (currentMainPage == PAGETYPE.ALL) handleInfiniteScroll();
-};
-
-let blockHandleInfiniteScroll = false;
-let infiniteScrollLastPreloadedPage = 1;
-let infiniteScrollMaxPreloadPage = 125; // Hardcoded for scrolltest, must lated get extracted from Pagination
-let inifiniteScrollBlockAppend = false;
-let infiniteScrollTilesBufferArray = [];
+}, { passive: true });
 
 function injectDarkMode() {
 
@@ -332,53 +324,11 @@ function injectDarkMode() {
       filter: invert(1) !important;
     }
     `
-    // Erstelle ein neues Style-Element
     var styleElement = document.createElement('style');
     styleElement.type = 'text/css';
-
-    // Füge die CSS-Variable und den Wert am Anfang des Style-Elements hinzu
     styleElement.textContent = darkCSS;
-
-    // Füge das Style-Element am Anfang des <head>-Tags hinzu
     document.head.insertBefore(styleElement, document.head.firstChild);
     document.body.classList.add('ave-color','ave-background-color');
-}
-
-/**
- * Append buffered tiles and prefetch additional pages when near the bottom.
- * Guards are used to avoid concurrent fetches and duplicate appends.
- */
-function handleInfiniteScroll() {
-    if (SETTINGS.DebugLevel > 10) console.log('Called handleInfiniteScroll()');
-    if (!inifiniteScrollBlockAppend) {
-        inifiniteScrollBlockAppend = true;
-        appendInfiniteScrollTiles(()=>{inifiniteScrollBlockAppend = false;})
-    }
-
-    if (SETTINGS.EnableInfiniteScrollLiveQuerry) {
-        if (blockHandleInfiniteScroll) return;
-        blockHandleInfiniteScroll = true;
-
-        const _maxScrollHeight = Math.max(document.body.scrollHeight - window.innerHeight, document.documentElement.scrollHeight - window.innerHeight);
-
-        if (SETTINGS.DebugLevel > 10) console.log(`handleInfiniteScroll(): _maxScrollHeight: ${_maxScrollHeight} window.scrollY+inner: ${window.scrollY + window.innerHeight}`);
-
-        if (_maxScrollHeight > (window.scrollY + (window.innerHeight * 2))){
-            blockHandleInfiniteScroll = false;
-            return;
-        } else if (infiniteScrollTilesBufferArray.length < 1000 && infiniteScrollLastPreloadedPage < infiniteScrollMaxPreloadPage) {
-            const _baseUrl = (/(http[s]{0,1}:\/\/[w]{0,3}.amazon.[a-z]{1,}.{0,1}[a-z]{0,}\/vine\/vine-items)/.exec(window.location.href))[1];
-            infiniteScrollLastPreloadedPage++;
-            getTilesFromURL(`${_baseUrl}?queue=encore&pn=&cn=&page=${infiniteScrollLastPreloadedPage}`, (tiles) =>{
-                infiniteScrollTilesBufferArray = infiniteScrollTilesBufferArray.concat(tiles);
-
-                blockHandleInfiniteScroll = false;
-                if (infiniteScrollTilesBufferArray.length < 500) handleInfiniteScroll();
-            });
-        } else {
-            blockHandleInfiniteScroll = false;
-        }
-    }
 }
 
 function getUrlParameter(name) {
@@ -896,83 +846,6 @@ async function createProductSite(siteType, productArray, cb) {
     addLeftSideButtons(true);
 }
 
-async function createInfiniteScrollSite(siteType, cb) {
-    if (SETTINGS.DebugLevel > 10) console.log(`Called createInfiniteScrollSite()`);
-
-    const _paginations = document.querySelectorAll('.a-pagination');
-    _paginations.forEach(_pagination => {
-        _pagination.remove();
-    });
-
-    const _contentContainer = document.querySelector('.a-section.vvp-tab-content');
-    if(_contentContainer.querySelector('.vvp-no-offers-msg')){
-        _contentContainer.querySelector('.vvp-no-offers-msg').remove();
-        let _tileStructure = document.createElement('div');
-        _tileStructure.classList = 'a-section vvp-items-container';
-        _tileStructure.innerHTML = `
-        <div id="vvp-browse-nodes-container">
-        </div>
-        <div id="vvp-items-grid-container">
-        <p>
-        </p>
-        <div id="vvp-items-grid" class="a-section">
-        </div>
-        </div>`;
-
-        _contentContainer.appendChild(_tileStructure);
-    };
-
-    const _nodesContainer = document.getElementById('vvp-browse-nodes-container');
-    if (_nodesContainer) _nodesContainer.innerHTML = '';
-
-    const _tilesContainer = document.getElementById('vvp-items-grid-container');
-    if (!_tilesContainer) reloadPageWithSubpageTarget(siteType);
-
-    if (_tilesContainer) {
-        const _topLine = _tilesContainer.getElementsByTagName('p')[0];
-        _topLine.innerHTML = ''
-    }
-
-    const _tilesGrid = document.getElementById('vvp-items-grid');
-    if (!_tilesGrid) reloadPageWithSubpageTarget(siteType);
-    _tilesGrid.innerHTML = '';
-
-    addLeftSideButtons(true);
-    cb(_tilesGrid);
-}
-
-async function appendInfiniteScrollTiles(cb = ()=>{}){
-    if (SETTINGS.DebugLevel > 10) console.log('appendInfiniteScrollTiles(): ', infiniteScrollTilesBufferArray);
-    const _tilesContainer = document.getElementById('vvp-items-grid');
-
-    let _stopCreation = false;
-    let _createdCount = 0;
-    while (infiniteScrollTilesBufferArray.length > 0 && !_stopCreation) {
-        const _tile = infiniteScrollTilesBufferArray.shift();
-        if (SETTINGS.EnableInfiniteScrollLiveQuerry) {
-            _tilesContainer.appendChild(_tile);
-            parseTileData(_tile).then((_product) => {
-                if (SETTINGS.DebugLevel > 14) console.log('Come Back from parseTileData <<<<<<<<<< INFINITYSCROLL <<<<<<<<<<<<<<<<<<<<<<<', _tile, _product);
-                addStyleToTile(_tile, _product);
-            });
-        } else {
-            createTileFromProduct(_tile).then((_elem) => {
-                _tilesContainer.appendChild(_elem);
-            })
-        }
-
-        if (_createdCount++ >= 100) _stopCreation = true;
-
-        const _maxScrollHeight = Math.max(document.body.scrollHeight - window.innerHeight, document.documentElement.scrollHeight - window.innerHeight);
-        if (_maxScrollHeight > (window.scrollY + (window.innerHeight * 2))) _stopCreation = true;
-
-        if (SETTINGS.DebugLevel > 10) console.log(`appendInfiniteScrollTiles(): Inside WHILE: _maxScrollHeigt: ${_maxScrollHeight} currPosition ${window.scrollY}`);
-    }
-
-    if (SETTINGS.DebugLevel > 10) console.log(`appendInfiniteScrollTiles(): After WHILE: left tile to create: ${infiniteScrollTilesBufferArray.length}`);
-    cb(true);
-}
-
 /**
  * AVE PAGETYPE ENUM
  * @readonly
@@ -981,7 +854,6 @@ async function appendInfiniteScrollTiles(cb = ()=>{}){
 const PAGETYPE = {
     NEW_ITEMS: 0,
     FAVORITES: 1,
-    ALL: 2,
     SEARCH_RESULT: 9,
 
     OROGINAL_POTLUCK: 100,
@@ -1022,42 +894,6 @@ function createNewSite(type, data) {
             })
             break;
         }
-        case PAGETYPE.ALL:{
-            currentMainPage = PAGETYPE.ALL;
-            createInfiniteScrollSite(currentMainPage,(_tilesContainer) => {
-                const _baseUrl = (/(http[s]{0,1}:\/\/[w]{0,3}.amazon.[a-z]{1,}.{0,1}[a-z]{0,}\/vine\/vine-items)/.exec(window.location.href))[1];
-                const _preloadPages = ['potluck', 'last_chance', 'encore']
-                infiniteScrollLastPreloadedPage = 1;
-                infiniteScrollMaxPreloadPage = 100;
-                infiniteScrollTilesBufferArray = [];
-
-                if (SETTINGS.EnableInfiniteScrollLiveQuerry) {
-                    getTilesFromURL(`${_baseUrl}?queue=${_preloadPages[0]}`, (tiles1) =>{
-                        infiniteScrollTilesBufferArray = infiniteScrollTilesBufferArray.concat(tiles1);
-                        appendInfiniteScrollTiles();
-                        getTilesFromURL(`${_baseUrl}?queue=${_preloadPages[1]}`, (tiles2) =>{
-                            infiniteScrollTilesBufferArray = infiniteScrollTilesBufferArray.concat(tiles2);
-                            appendInfiniteScrollTiles();
-                            getTilesFromURL(`${_baseUrl}?queue=${_preloadPages[2]}`, (tiles3) =>{
-                                infiniteScrollTilesBufferArray = infiniteScrollTilesBufferArray.concat(tiles3);
-                                appendInfiniteScrollTiles();
-                                setTimeout(()=> {
-                                    handleInfiniteScroll();
-                                }, 500);
-                            })
-                        })
-                    })
-                } else {
-                    database.getAll().then((prodArr) => {
-                        const _showFirstSeen = SETTINGS.ShowFirstSeen || false;
-                        prodArr = sort_by_key(prodArr, _showFirstSeen ? 'ts_firstSeen' : 'ts_lastSeen');
-                        infiniteScrollTilesBufferArray = prodArr;
-                        appendInfiniteScrollTiles();
-                    });
-                }
-            });
-            break;
-        }
         case PAGETYPE.SEARCH_RESULT:{
             currentMainPage = PAGETYPE.SEARCH_RESULT;
             createProductSite(type, data, () => {
@@ -1065,39 +901,6 @@ function createNewSite(type, data) {
             break;
         }
     }
-}
-
-let lastGetTilesFromURLQuerry = 0;
-function getTilesFromURL(url, cb = (_tilesArray) => {}) {
-    if (lastGetTilesFromURLQuerry + SETTINGS.PageLoadMinDelay > Date.now()) {
-        const _delay =  Math.max(1, lastGetTilesFromURLQuerry + SETTINGS.PageLoadMinDelay - Date.now());
-        console.warn(`getTilesFromURL() DELAYED for ${_delay}ms`)
-        setTimeout(() => {getTilesFromURL(url, cb)}, _delay);
-        return;
-    }
-    GM.xmlHttpRequest({
-        method: "GET",
-        url: url,
-        onload: function(response) {
-            const _parser = new DOMParser();
-            const _doc = _parser.parseFromString(response.responseText, "text/html");
-            lastGetTilesFromURLQuerry = Date.now();
-            waitForHtmlElement('#vvp-items-grid', (itemsContainer) => {
-                if (!itemsContainer) return;
-                
-                if (SETTINGS.DebugLevel > 10) console.log('getTileFromURL(): itemsContainer:', itemsContainer);
-                const _retArr = [];
-                const _elemArr = itemsContainer.querySelectorAll('.vvp-item-tile');
-                for (let i = 0; i < _elemArr.length; i++){
-                    _retArr.push(_elemArr[i].cloneNode(true));
-                }
-                cb(_retArr);
-
-                const _paginationData = getPageinationData();
-                if (_paginationData) infiniteScrollMaxPreloadPage = _paginationData.maxPage;
-            }, _doc);
-        }
-    })
 }
 
 let lastBtnEventhandlerClickTimeStamp = 0;
@@ -2502,7 +2305,6 @@ function init(hasTiles) {
 
     const _searchbarContainer = document.getElementById('vvp-items-button-container');
 
-    if (SETTINGS.EnableBtnAll) _searchbarContainer.appendChild(createNavButton('ave-btn-favorites', 'Alle Produkte', '', SETTINGS.BtnColorAllProducts, () => { createNewSite(PAGETYPE.ALL); }));
     _searchbarContainer.appendChild(createNavButton('ave-btn-favorites', translate('buttons', 'favorites', 'Favoriten'), '', SETTINGS.BtnColorFavorites, () => {createNewSite(PAGETYPE.FAVORITES);}, 'ave-fav-items-btn-badge', '-', SETTINGS.BtnColorFavoritesBadge));
     _searchbarContainer.appendChild(createNavButton('ave-btn-list-new', translate('buttons', 'newEntries', 'Neue Einträge'), 'ave-new-items-btn', SETTINGS.BtnColorNewProducts, () => {createNewSite(PAGETYPE.NEW_ITEMS);}, 'ave-new-items-btn-badge', '-', SETTINGS.BtnColorNewProductsBadge));
 
