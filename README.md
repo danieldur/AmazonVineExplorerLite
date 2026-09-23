@@ -24,7 +24,7 @@ This script enhances the experience on the Amazon Vine website. However, it does
 ## How to install:
 
 * Install Tampermonkey: [https://www.tampermonkey.net/](https://www.tampermonkey.net/)
-* Install Amazon Vine Explorer: [https://github.com/deburau/AmazonVineExplorer/raw/main/VineExplorer.user.js](https://github.com/deburau/AmazonVineExplorer/raw/main/VineExplorer.user.js)
+* Install Amazon Vine Explorer: [https://github.com/danieldur/AmazonVineExplorerLite/raw/main/VineExplorer.user.js](https://github.com/danieldur/AmazonVineExplorerLite/raw/main/VineExplorer.user.js)
 
 ## If it does not work
 
