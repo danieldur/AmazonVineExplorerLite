@@ -194,7 +194,6 @@ setTimeout(() => {
             _sessions[_ownIndex].master = true;
             addBranding();
             console.log('WE TOOK OVER MASTER SESSION TO OUR CURRENT');
-            // More Handling NEEDED ????
         }
         localStorage.setItem("AVE_SESSIONS", JSON.stringify(_sessions));
     }, 1000);
@@ -232,9 +231,7 @@ SETTINGS_USERCONFIG_DEFINES.push({key: 'DisableBtnLastChance', type: 'bool', nam
 SETTINGS_USERCONFIG_DEFINES.push({key: 'DisableBtnSeller', type: 'bool', name: 'Disable Button Seller', description: 'Disables the Section Button Seller(ZA)'});
 SETTINGS_USERCONFIG_DEFINES.push({key: 'EnableTopLogoChange', type: 'bool', name: 'Enable Top Logo Change', description: 'Enables the Change of the top logo to our AVE Logo'});
 
-SETTINGS_USERCONFIG_DEFINES.push({key: 'EnableBtnAll', type: 'bool', name: 'Enable Button All Products', description: 'Enable &quot;All Products&quot; Button'});
 SETTINGS_USERCONFIG_DEFINES.push({key: 'EnablePaginationTop', type: 'bool', name: 'Enable Pagination on top', description: 'Enable Pagination to be displayed on top for ZA page' });
-SETTINGS_USERCONFIG_DEFINES.push({key: 'EnableInfiniteScrollLiveQuerry', type: 'bool', name: 'Enable Infiniti Scroll Live Querry', description: 'If enabled the Products of the All Products Page will get querryd from Amazon directls otherwise they will get loaded from Database(faster)'});
 SETTINGS_USERCONFIG_DEFINES.push({key: 'EnableDesktopNotifikation', type: 'bool', name: 'Enable Desktop Notifications', description: 'Enable Desktop Notifications if new Products are detected'});
 SETTINGS_USERCONFIG_DEFINES.push({key: 'EnableAutoMarkFavorite', type: 'bool', name: 'Enable auto marking product as favotite', description: 'If a new product matches a highlight keyword it is automatically marked as favorite'});
 SETTINGS_USERCONFIG_DEFINES.push({key: 'EnableCleanupFavorites', type: 'bool', name: 'Also remove favorites when cleaning up products', description: 'If enabled, favorite products will also be removed during the cleanup process based on the defined criteria.'});
@@ -259,7 +256,6 @@ SETTINGS_USERCONFIG_DEFINES.push({key: 'BtnColorMarkCurrSiteAsSeen', type: 'colo
 SETTINGS_USERCONFIG_DEFINES.push({key: 'BtnColorMarkAllAsSeen', type: 'color', name: 'Button Color Mark All As Seen', description: ''});
 SETTINGS_USERCONFIG_DEFINES.push({key: 'BtnColorBackToTop', type: 'color', name: 'Button Color Back To Top', description: ''});
 SETTINGS_USERCONFIG_DEFINES.push({key: 'BtnColorUpdateDB', type: 'color', name: 'Button Color Update Database', description: ''});
-SETTINGS_USERCONFIG_DEFINES.push({key: 'BtnColorAllProducts', type: 'color', name: 'Button Color All Products', description: ''});
 SETTINGS_USERCONFIG_DEFINES.push({key: 'BtnColorFavorites', type: 'color', name: 'Button Color Favorites', description: ''});
 SETTINGS_USERCONFIG_DEFINES.push({key: 'BtnColorFavoritesBadge', type: 'color', name: 'Button Color Favorites Badge', description: ''});
 SETTINGS_USERCONFIG_DEFINES.push({key: 'FavStarColorDefault', type: 'color', name: 'Color Favorite Star unchecked', description: ''});
@@ -301,11 +297,9 @@ class SETTINGS_DEFAULT {
     DisableBtnLastChance = false;
     DisableBtnSeller = false;
     EnableTopLogoChange = true;
-    EnableInfiniteScrollLiveQuerry = false;
     EnableDesktopNotifikation = false;
     EnableAutoMarkFavorite = false;
     EnableCleanupFavorites = false;
-    EnableBtnAll = true;
     EnablePaginationTop = true;
     EnableBtnMarkAllAsSeen = true;
     ShowFirstSeen = false;
@@ -319,7 +313,6 @@ class SETTINGS_DEFAULT {
     BtnColorMarkAllAsSeen = '#FFA28E';
     BtnColorBackToTop = '#FFFFFF'
     BtnColorUpdateDB = '#00FF00';
-    BtnColorAllProducts = '#FFFFFF';
 
     FavStarColorDefault = 'white';
     FavStarColorChecked = '#ffe143';
@@ -629,7 +622,7 @@ async function fastStyleChanges() {
         if (SETTINGS.EnableTopLogoChange) {
             waitForHtmlElement('#vvp-logo-link > img', (elem) => {
                 if (elem) {
-                    elem.src = 'https://raw.githubusercontent.com/Amazon-Vine-Explorer/AmazonVineExplorer/dev-main/vine_logo_notification_image.png';
+                    elem.src = 'https://raw.githubusercontent.com/danieldur/AmazonVineExplorerLite/main/vine_logo_notification_image.png';
                     elem.style.height = '100px';
                 }
             });
