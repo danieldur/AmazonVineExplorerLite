@@ -129,7 +129,6 @@ function addBranding() {
     </div>
     `;
 
-
     document.body.appendChild(_text);
 
     const _brandingClose = document.getElementById('ave-branding-x');
@@ -195,7 +194,6 @@ setTimeout(() => {
             _sessions[_ownIndex].master = true;
             addBranding();
             console.log('WE TOOK OVER MASTER SESSION TO OUR CURRENT');
-            initBackgroundScan();
             // More Handling NEEDED ????
         }
         localStorage.setItem("AVE_SESSIONS", JSON.stringify(_sessions));
@@ -203,7 +201,6 @@ setTimeout(() => {
 
 
 }, Math.round(Math.random() * 100));
-
 
 window.onbeforeunload = function () {
     console.log('CLOSE OR RELOAD SESSION - REMOVE OUR SESSION ID FROM ARRAY');
@@ -219,7 +216,6 @@ window.onbeforeunload = function () {
     }
     return 'Realy ?'
 }
-
 
 // All Config Options that should shown to the User
 const SETTINGS_USERCONFIG_DEFINES = [];
@@ -238,7 +234,6 @@ SETTINGS_USERCONFIG_DEFINES.push({key: 'EnableTopLogoChange', type: 'bool', name
 
 SETTINGS_USERCONFIG_DEFINES.push({key: 'EnableBtnAll', type: 'bool', name: 'Enable Button All Products', description: 'Enable &quot;All Products&quot; Button'});
 SETTINGS_USERCONFIG_DEFINES.push({key: 'EnablePaginationTop', type: 'bool', name: 'Enable Pagination on top', description: 'Enable Pagination to be displayed on top for ZA page' });
-SETTINGS_USERCONFIG_DEFINES.push({key: 'EnableBackgroundScan', type: 'bool', name: 'Enable Background Scan', description: 'Enables the Background scan, if disabled you will find a Button for Autoscan on the Vine Website'});
 SETTINGS_USERCONFIG_DEFINES.push({key: 'EnableInfiniteScrollLiveQuerry', type: 'bool', name: 'Enable Infiniti Scroll Live Querry', description: 'If enabled the Products of the All Products Page will get querryd from Amazon directls otherwise they will get loaded from Database(faster)'});
 SETTINGS_USERCONFIG_DEFINES.push({key: 'EnableDesktopNotifikation', type: 'bool', name: 'Enable Desktop Notifications', description: 'Enable Desktop Notifications if new Products are detected'});
 SETTINGS_USERCONFIG_DEFINES.push({key: 'EnableAutoMarkFavorite', type: 'bool', name: 'Enable auto marking product as favotite', description: 'If a new product matches a highlight keyword it is automatically marked as favorite'});
@@ -248,11 +243,8 @@ SETTINGS_USERCONFIG_DEFINES.push({key: 'ShowFirstSeen', type: 'bool', name: 'Sho
 SETTINGS_USERCONFIG_DEFINES.push({key: 'DesktopNotifikationKeywords', type: 'keywords', name: 'Desktop Notification Highlight Keywords', inputPlaceholder: 'Type in your highlight keywords one per line and click outside to submit', description: 'Create a List of words u want to Highlight if Product desciption containes one or more of them'});
 SETTINGS_USERCONFIG_DEFINES.push({key: 'GotifyUrl', type: 'url', name: 'URL of the Gotify Server', description: 'If Gotify should be used for notifications, enter the URL of your Gotify server here, e.g. https://gotify.example.com'});
 SETTINGS_USERCONFIG_DEFINES.push({key: 'GotifyToken', type: 'password', name: 'Gotify application token', description: 'The authenticatin token of your Gotify application'});
-SETTINGS_USERCONFIG_DEFINES.push({key: 'BackGroundScanDelayPerPage', type: 'number', min: 2000, max: 20000, name: 'Background Scan Per Page Min Delay(Milliseconds)', description: 'Minimal Delay per Page load of Background Scan'});
-SETTINGS_USERCONFIG_DEFINES.push({key: 'BackGroundScannerRandomness', type: 'number', min: 100, max: 10000, name: 'Background Scan Randomness per Page(Milliseconds)', description: 'A Value that gives the maximal range for the Randomy added delay per page load'});
 SETTINGS_USERCONFIG_DEFINES.push({key: 'DesktopNotifikationDelay', type: 'number', min: 0, max: 3600, name: 'Desktop Notifikation Delay (Seconds)', description: 'Minimal time between desktop notifikations, exept notifikations for keyword matches. A value of 0 disables this notifications.'});
 SETTINGS_USERCONFIG_DEFINES.push({key: 'SearchBarInputDelay', type: 'number', min: 100, max: 1000, name: 'Search Bar Input Delay until auto search(Milliseconds)', description: 'When typing in the search bar, start searching when no key pressed this long milliseconds'});
-SETTINGS_USERCONFIG_DEFINES.push({key: 'IdlePeriodAfterScan', type: 'number', min: 0, max: 1440, name: 'Idle period after a scan', description: 'Number of minutes to wait until next scan starts'});
 SETTINGS_USERCONFIG_DEFINES.push({key: 'HoursBeforeCleanup', type: 'number', min: 0, max: 168, name: 'Number of hours to wait before items get removed from the database', description: 'If an item was not seen this many hours during full background scans, it will be removed from the database. For a value of zero, the items will be removed as soon as they where not seen during a scan.'});
 SETTINGS_USERCONFIG_DEFINES.push({key: 'MaxItemsPerPage', type: 'number', min: 20, max: 1000, name: 'Maximum items per page', description: 'Maximum items that will show up one one page'});
 SETTINGS_USERCONFIG_DEFINES.push({key: 'UnseenItemsNotificationThreshold', type: 'number', min: 0, max: 1000, name: 'Number of unseen items to trigger a unseen items notification', description: 'If greater than zero, a notification is sent if the number of unseen item exeeds this number'});
@@ -309,12 +301,11 @@ class SETTINGS_DEFAULT {
     DisableBtnLastChance = false;
     DisableBtnSeller = false;
     EnableTopLogoChange = true;
-    EnableBackgroundScan = true;
     EnableInfiniteScrollLiveQuerry = false;
     EnableDesktopNotifikation = false;
     EnableAutoMarkFavorite = false;
     EnableCleanupFavorites = false;
-EnableBtnAll = true;
+    EnableBtnAll = true;
     EnablePaginationTop = true;
     EnableBtnMarkAllAsSeen = true;
     ShowFirstSeen = false;
@@ -339,18 +330,15 @@ EnableBtnAll = true;
     HoursBeforeCleanup = 24;
     PageLoadMinDelay = 750;
     DebugLevel = 0;
-MaxItemsPerPage = 500;
+    MaxItemsPerPage = 500;
     UnseenItemsNotificationThreshold = 0;
     NewItemsNotificationThreshold = 0;
     NewItemsNotificationRepititionMinutes = 30;
     UnseenItemsNotificationRepitionMinutes = 10;
     FetchRetryTime = 50;
     FetchRetryMaxTime = 5000;
-    BackGroundScanDelayPerPage = 6000;
-    BackGroundScannerRandomness = 6000;
     DesktopNotifikationDelay = 60;
     SearchBarInputDelay = 500;
-    IdlePeriodAfterScan = 180;
     DesktopNotifikationKeywords = [];
     GotifyUrl = '';
     GotifyToken = '';
@@ -388,8 +376,8 @@ MaxItemsPerPage = 500;
 const SETTINGS = new SETTINGS_DEFAULT();
 
 /**
-  * Load Settings from GM Storage
-  */
+ * Load Settings from GM Storage
+ */
 function loadSettings() {
     const _settingsStore = GM_getValue('AVE_SETTINGS', {});
     console.log('Got Settings from GM:(', typeof(_settingsStore),')', _settingsStore);
@@ -406,16 +394,16 @@ function loadSettings() {
 }
 
 /**
-  * Save Settings to GM Storage
-  */
+ * Save Settings to GM Storage
+ */
 function saveSettings() {
     SETTINGS.save();
 }
 
 /**
-  * Timestamp in Seconds
-  * @return {number} unixTimestamp
-  */
+ * Timestamp in Seconds
+ * @return {number} unixTimestamp
+ */
 function unixTimeStamp () {
     return Math.floor(Date.now() / 1000)
 }
@@ -448,28 +436,30 @@ function toTimestamp(unixTimestamp) {
     * @param {number} [timeout] Timeout in milliseconds
     */
 async function waitForHtmlElement(selector, cb, altDocument = document, timeout = 10000) {
-    if (typeof (selector) !== 'string') throw new Error('waitForHtmlElement(): selector is not defined or is not type of string');
-    if (typeof (cb) !== 'function') throw new Error('waitForHtmlElement(): cb is not defined or is not type of string');
+    if (typeof (selector) !== 'string') throw new Error('waitForHtmlElement(): selector is not defined');
+    if (typeof (cb) !== 'function') throw new Error('waitForHtmlElement(): cb is not defined');
 
-    if (altDocument.querySelector(selector)) {
-        cb(altDocument.querySelector(selector));
+    const targetNode = altDocument.body || altDocument;
+    
+    const existingElem = typeof altDocument.querySelector === 'function' ? altDocument.querySelector(selector) : null;
+    if (existingElem) {
+        cb(existingElem);
         return;
     }
 
+    let timeoutId;
     const _observer = new MutationObserver(() => {
-        if (altDocument.querySelector(selector)) {
+        const found = typeof altDocument.querySelector === 'function' ? altDocument.querySelector(selector) : null;
+        if (found) {
             _observer.disconnect();
-            cb(altDocument.querySelector(selector));
-            return;
+            clearTimeout(timeoutId); 
+            cb(found);
         }
     });
 
-    _observer.observe(altDocument.body || altDocument, {
-        childList: true,
-        subtree: true
-    });
+    _observer.observe(targetNode, { childList: true, subtree: true });
 
-const timeoutId = setTimeout(() => {
+    timeoutId = setTimeout(() => {
         _observer.disconnect();
         console.warn(`Timeout: element ${selector} not found`);
         cb(null);
@@ -478,7 +468,7 @@ const timeoutId = setTimeout(() => {
 
 // Wrap waitForHtmlElement in a Promise to use it with async/await
 async function waitForHtmlElementPromise(selector, altDocument = document, timeout = 10000) {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
         waitForHtmlElement(selector, resolve, altDocument, timeout);
     });
 }
@@ -621,21 +611,18 @@ async function fastStyleChanges() {
         if (SETTINGS.DisableBtnPotLuck) {
             waitForHtmlElement('#vvp-items-button--recommended', (elem) => {
                 if (elem) elem.style.display = 'none';
-                // elem.style.visibility = 'hidden';
             });
         }
 
         if (SETTINGS.DisableBtnLastChance) {
             waitForHtmlElement('#vvp-items-button--all', (elem) => {
                 if (elem) elem.style.display = 'none';
-                // elem.style.visibility = 'hidden';
             });
         }
 
         if (SETTINGS.DisableBtnSeller) {
             waitForHtmlElement('#vvp-items-button--seller', (elem) => {
                 if (elem) elem.style.display = 'none';
-                // elem.style.visibility = 'hidden';
             });
         }
 
@@ -658,7 +645,6 @@ async function fastStyleChanges() {
                         if (!elem) return;
 
                         var clonedDiv = elem.cloneNode(true);
-                        //clonedDiv.style.marginTop = '-25px';
                         clonedDiv.style.marginBottom = '10px';
                         var parentContainer = document.getElementById('vvp-items-grid-container');
                         if (parentContainer) {
@@ -681,10 +667,8 @@ async function fastStyleChanges() {
     } else if (SITE_IS_SHOPPING) {
 
         if (SETTINGS.DisableSuggestionsShopping) {
-            //rhf-frame
             waitForHtmlElement('#rhf', (elem) => {
                 if (elem) elem.style.display = 'none';
-                // elem.style.visibility = 'hidden';
             });
         }
 
