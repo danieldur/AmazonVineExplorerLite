@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Amazon Vine Explorer Lite
 // @namespace    https://github.com/danieldur/AmazonVineExplorerLite
-// @version      0.12.0
+// @version      0.12.1
 // @updateURL    https://raw.githubusercontent.com/danieldur/AmazonVineExplorerLite/main/VineExplorer.user.js
 // @downloadURL  https://raw.githubusercontent.com/danieldur/AmazonVineExplorerLite/main/VineExplorer.user.js
 // @supportURL   https://github.com/danieldur/AmazonVineExplorerLite/issues
